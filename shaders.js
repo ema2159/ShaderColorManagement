@@ -34,12 +34,14 @@ void main(void) {
 
   vec2 cellSize = 1.0 / resolution.xy;
   vec2 uv = vUv.xy;
-  vec2 lutSize = vec2(64, 4095);
-  float stepG = lutSize.x/lutSize.y;
+  vec3 lutSize = vec3(63.0, 64.0, 4095.0);
+  float stepR = 1.0/lutSize.r;
+  float stepG = lutSize.g/lutSize.b;
+  float stepB = 1.0/lutSize.b;
   vec3 srcCoords = vec3(0.0, 0.0, 0.0);
   vec2 coords;
-  coords.x = (srcCoords.b/4096.0) + (srcCoords.g*stepG);
-  coords.y = 1.0;
+  coords.x = clamp(srcCoords.b, 0.0, 63.0)*stepB + (srcCoords.g*stepG);
+  coords.y = 1.0-srcCoords.r*stepR;
 
   vec3 textureValue;
   if (interpolation == 0) {
