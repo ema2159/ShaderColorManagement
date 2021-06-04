@@ -21,12 +21,12 @@ void main() {
 `
 const fragmentShader = `
 precision highp float;
-uniform sampler2D image;
-uniform sampler2D srcLUT;
-uniform sampler2D dstLUT;
+uniform sampler2D u_image;
+uniform int u_LUTChoice;
+uniform sampler2D u_srcLUT;
+uniform sampler2D u_dstLUT;
 uniform vec2 resolution;
-uniform float scale;
-uniform int interpolation;
+uniform int u_interpolation;
 
 varying vec2 vUv;
 
@@ -155,13 +155,24 @@ void main(void) {
   vec2 uv = vUv.xy;
 
   vec3 textureValue;
-  if (interpolation == 0) {
-    vec3 pix = texture2D(image, uv).rgb;
-    textureValue = trilinear_interpolation(pix, srcLUT);
-  } else if (interpolation == 1) {
-    textureValue = texture2D(image, uv).rgb;
-  } else if (interpolation == 2) {
-    textureValue = texture2D(image, uv).rgb;
+  vec3 pix = texture2D(u_image, uv).rgb;
+
+  if (u_LUTChoice == 0) {
+    if (u_interpolation == 0) {
+      textureValue = nn_interpolation(pix, u_srcLUT);
+    } else if (u_interpolation == 1) {
+      textureValue = trilinear_interpolation(pix, u_srcLUT);
+    } else if (u_interpolation == 2) {
+      textureValue = prism_interpolation(pix, u_srcLUT);
+    }
+  } else {
+    if (u_interpolation == 0) {
+      textureValue = nn_interpolation(pix, u_dstLUT);
+    } else if (u_interpolation == 1) {
+      textureValue = trilinear_interpolation(pix, u_dstLUT);
+    } else if (u_interpolation == 2) {
+      textureValue = prism_interpolation(pix, u_dstLUT);
+    }
   }
 
   gl_FragColor = vec4(textureValue, 1.0);

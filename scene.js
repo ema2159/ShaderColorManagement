@@ -121,10 +121,11 @@ function init() {
 	// Image scaling
         scaleX: {type: "f", value: 1.0},
         scaleY: {type: "f", value: 1.0},
-        interpolation: {type: "i", value: 0},
-        image: {type: "t", value: videoTexture},
-        srcLUT: {type: "t", value: srcLUT},
-        dstLUT: {type: "t", value: dstLUT},
+        u_interpolation: {type: "i", value: 0},
+        u_LUTChoice: {type: "i", value: 0},
+        u_image: {type: "t", value: videoTexture},
+        u_srcLUT: {type: "t", value: srcLUT},
+        u_dstLUT: {type: "t", value: dstLUT},
         resolution: {
           type: "2f",
           value: new THREE.Vector2(video.videoWidth, video.videoHeight),
@@ -182,6 +183,16 @@ function init() {
     };
 
     gui = new GUI();
+    gui
+      .add(imageProcessingMaterial.uniforms.u_LUTChoice,
+           "value",
+           {Src: 0, Dst: 1})
+      .name("LUT");
+    gui
+      .add(imageProcessingMaterial.uniforms.u_interpolation,
+           "value",
+           {Nearest: 0, Trilinear: 1, Prism: 2})
+      .name("Interp. Method");
     gui.add(pausePlayObj, "pausePlay").name("Pause/play video");
     gui.add(pausePlayObj, "add10sec").name("Add 10 seconds");
     video.play();
