@@ -93,6 +93,18 @@ vec3 trilinear_interpolation(vec3 pix, sampler2D LUT) {
   return C;
 }
 
+vec3 nn_interpolation(vec3 pix, sampler2D LUT) {
+  // Represent the current image pixel color coordinates in the interval [0, 63]
+  pix *= 63.0;
+  // Store integer part of color coordinates in pix and fractional part in interp
+  modf(pix, pix);
+
+  vec2 coords;
+  coords.x = clamp(pix.b, 0.0, 63.0)*stepB + (pix.g)*stepG;
+  coords.y = 1.0-pix.r*stepR;
+
+  return texture2D(LUT, coords).rgb;
+}
 void main(void) {
 
   vec2 cellSize = 1.0 / resolution.xy;
