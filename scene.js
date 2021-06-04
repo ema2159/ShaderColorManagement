@@ -141,8 +141,6 @@ function init() {
       imageProcessingMaterial
     );
 
-    console.log(imageProcessing.width);
-
     var geometry = new THREE.PlaneGeometry(
       1,
       video.videoHeight / video.videoWidth,
@@ -173,16 +171,13 @@ function init() {
     var pausePlayObj = {
       pausePlay: function () {
         if (!video.paused) {
-          console.log("pause");
           video.pause();
         } else {
-          console.log("play");
           video.play();
         }
       },
       add10sec: function () {
         video.currentTime = video.currentTime + 10;
-        console.log(video.currentTime);
       },
     };
 
