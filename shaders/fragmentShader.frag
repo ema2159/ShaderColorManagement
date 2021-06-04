@@ -88,15 +88,8 @@ void main(void) {
   vec2 cellSize = 1.0 / resolution.xy;
   vec2 uv = vUv.xy;
 
-  // vec3 srcCoords = vec3(63.0, 0.0, 63.0);
-  // vec2 coords;
-  // coords.x = clamp(srcCoords.b, 0.0, 63.0)*stepB + (srcCoords.g*stepG);
-  // coords.y = 1.0-srcCoords.r*stepR;
-
   vec3 textureValue;
   if (interpolation == 0) {
-    // textureValue = texture2D(srcLUT, coords).rgb;
-    // textureValue = texture2D(image, uv).rgb;
     vec3 pix = texture2D(image, uv).rgb;
     textureValue = trilinear_interpolation(pix, srcLUT);
   } else if (interpolation == 1) {
