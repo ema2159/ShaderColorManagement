@@ -113,6 +113,8 @@ function init() {
 
     srcLUT.minFilter = THREE.NearestFilter;
     srcLUT.magFilter = THREE.NearestFilter;
+    dstLUT.minFilter = THREE.NearestFilter;
+    dstLUT.magFilter = THREE.NearestFilter;
 
     imageProcessingMaterial = new THREE.ShaderMaterial({
       uniforms: {
