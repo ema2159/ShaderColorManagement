@@ -35,7 +35,7 @@ const float stepR = 1.0/lutSize.r;
 const float stepG = lutSize.g/lutSize.b;
 const float stepB = 1.0/lutSize.b;
 
-vec3 trilinear_helper(vec3 pix, sampler2D LUT, vec3 shift) {
+vec3 intp_helper(vec3 pix, sampler2D LUT, vec3 shift) {
   vec2 coords;
   coords.x = clamp(pix.b+shift.b, 0.0, 63.0)*stepB + (pix.g+shift.g)*stepG;
   coords.y = 1.0-(pix.r+shift.r)*stepR;
@@ -44,41 +44,42 @@ vec3 trilinear_helper(vec3 pix, sampler2D LUT, vec3 shift) {
 }
 
 vec3 trilinear_interpolation(vec3 pix, sampler2D LUT) {
-  // LUT
+  // Represent the current image pixel color coordinates in the interval [0, 63]
   pix *= 63.0;
+  // Store integer part of color coordinates in pix and fractional part in interp
   vec3 interp = modf(pix, pix);
   vec3 C_000, C_100, C_010, C_110, C_001, C_101, C_011, C_111, C_00, C_01, C_10,
        C_11, C_0, C_1, C;
-  vec2 coords;
+
   // C_00
   // C_000
-  C_000 = trilinear_helper(pix, LUT, vec3(0.0));
+  C_000 = intp_helper(pix, LUT, vec3(0.0));
   // C_100
-  C_100 = trilinear_helper(pix, LUT, vec3(0.0, 0.0, 1.0));
+  C_100 = intp_helper(pix, LUT, vec3(0.0, 0.0, 1.0));
 
   C_00 = mix(C_000, C_100, interp.b);
 
   // C_10
   // C_010
-  C_010 = trilinear_helper(pix, LUT, vec3(1.0, 0.0, 0.0));
+  C_010 = intp_helper(pix, LUT, vec3(1.0, 0.0, 0.0));
   // C_110
-  C_110 = trilinear_helper(pix, LUT, vec3(1.0, 0.0, 1.0));
+  C_110 = intp_helper(pix, LUT, vec3(1.0, 0.0, 1.0));
 
   C_10 = mix(C_010, C_110, interp.b);
 
   // C_01
   // C_001
-  C_001 = trilinear_helper(pix, LUT, vec3(0.0, 1.0, 0.0));
+  C_001 = intp_helper(pix, LUT, vec3(0.0, 1.0, 0.0));
   // C_101
-  C_101 = trilinear_helper(pix, LUT, vec3(0.0, 1.0, 1.0));
+  C_101 = intp_helper(pix, LUT, vec3(0.0, 1.0, 1.0));
 
   C_01 = mix(C_001, C_101, interp.b);
 
   // C_11
   // C_011
-  C_011 = trilinear_helper(pix, LUT, vec3(1.0, 1.0, 0.0));
+  C_011 = intp_helper(pix, LUT, vec3(1.0, 1.0, 0.0));
   // C_111
-  C_111 = trilinear_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
+  C_111 = intp_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
 
   C_11 = mix(C_011, C_111, interp.b);
 
