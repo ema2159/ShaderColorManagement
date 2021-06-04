@@ -105,6 +105,50 @@ vec3 nn_interpolation(vec3 pix, sampler2D LUT) {
 
   return texture2D(LUT, coords).rgb;
 }
+
+vec3 prism_interpolation(vec3 pix, sampler2D LUT) {
+  // Represent the current image pixel color coordinates in the interval [0, 63]
+  pix *= 63.0;
+  // Store integer part of color coordinates in pix and fractional part in interp
+  vec3 interp = modf(pix, pix);
+
+  float deltaB = interp.b;
+  float deltaR = interp.r;
+  float deltaG = interp.g;
+
+  vec3 return_pix;
+
+  // Common points bewteen two cases
+  vec3 P_000, P_110, P_001, P_111;
+
+  P_000 = intp_helper(pix, LUT, vec3(0.0));
+  P_110 = intp_helper(pix, LUT, vec3(1.0, 0.0, 1.0));
+  P_001 = intp_helper(pix, LUT, vec3(0.0, 1.0, 0.0));
+  P_111 = intp_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
+
+  if (deltaB > deltaR) {
+    vec3 P_100, P_101;
+
+    P_100 = intp_helper(pix, LUT, vec3(0.0, 0.0, 1.0));
+    P_101 = intp_helper(pix, LUT, vec3(0.0, 1.0, 1.0));
+
+    return_pix = P_000 + (P_100-P_000)*deltaB + (P_110-P_100)*deltaR \
+      + (P_001-P_000)*deltaG + (P_101-P_001-P_100+P_000)*deltaB*deltaG \
+      + (P_111-P_101-P_110+P_100)*deltaR*deltaG;
+  } else {
+    vec3 P_010, P_011;
+
+    P_010 = intp_helper(pix, LUT, vec3(1.0, 0.0, 0.0));
+    P_011 = intp_helper(pix, LUT, vec3(1.0, 1.0, 0.0));
+
+    return_pix = P_000 + (P_110-P_010)*deltaB + (P_010-P_000)*deltaR \
+      + (P_001-P_000)*deltaG + (P_111-P_011-P_110+P_010)*deltaB*deltaG \
+      + (P_011-P_001-P_010+P_000)*deltaR*deltaG;
+  }
+
+  return return_pix;
+}
+
 void main(void) {
 
   vec2 cellSize = 1.0 / resolution.xy;
