@@ -127,6 +127,80 @@ vec3 prism_interpolation(vec3 pix, sampler2D LUT) {
   return return_pix;
 }
 
+vec3 tetra_interpolation(vec3 pix, sampler2D LUT) {
+  // Represent the current image pixel color coordinates in the interval [0, 63]
+  pix *= 63.0;
+  // Store integer part of color coordinates in pix and fractional part in interp
+  vec3 interp = modf(pix, pix);
+
+  float deltaB = interp.b;
+  float deltaR = interp.r;
+  float deltaG = interp.g;
+
+  vec3 return_pix;
+
+  // Common points bewteen two cases
+  vec3 P_000, P_110, P_001, P_111, P_100, P_101, P_010, P_011;
+
+  if (deltaB > deltaR && deltaR > deltaG) {
+    // P1
+    P_000 = intp_helper(pix, LUT, vec3(0.0));
+    P_100 = intp_helper(pix, LUT, vec3(0.0, 0.0, 1.0));
+    P_110 = intp_helper(pix, LUT, vec3(1.0, 0.0, 1.0));
+    P_111 = intp_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
+
+    return_pix = P_000 + (P_100-P_000)*deltaB + (P_110-P_100)*deltaR \
+      + (P_111-P_110)*deltaG;
+  } else if (deltaB > deltaG && deltaG > deltaR) {
+    // P2
+    P_000 = intp_helper(pix, LUT, vec3(0.0));
+    P_100 = intp_helper(pix, LUT, vec3(0.0, 0.0, 1.0));
+    P_101 = intp_helper(pix, LUT, vec3(0.0, 1.0, 1.0));
+    P_111 = intp_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
+
+    return_pix = P_000 + (P_100-P_000)*deltaB + (P_111-P_101)*deltaR \
+      + (P_101-P_100)*deltaG;
+  } else if (deltaG > deltaB && deltaB > deltaR) {
+    // P3
+    P_000 = intp_helper(pix, LUT, vec3(0.0));
+    P_001 = intp_helper(pix, LUT, vec3(0.0, 1.0, 0.0));
+    P_101 = intp_helper(pix, LUT, vec3(0.0, 1.0, 1.0));
+    P_111 = intp_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
+
+    return_pix = P_000 + (P_101-P_001)*deltaB + (P_111-P_101)*deltaR \
+      + (P_001-P_000)*deltaG;
+  } else if (deltaR > deltaB && deltaB > deltaG) {
+    // P4
+    P_000 = intp_helper(pix, LUT, vec3(0.0));
+    P_110 = intp_helper(pix, LUT, vec3(1.0, 0.0, 1.0));
+    P_010 = intp_helper(pix, LUT, vec3(1.0, 0.0, 0.0));
+    P_111 = intp_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
+
+    return_pix = P_000 + (P_110-P_010)*deltaB + (P_010-P_000)*deltaR \
+      + (P_111-P_110)*deltaG;
+  } else if (deltaR > deltaG && deltaG > deltaB) {
+    // P5
+    P_000 = intp_helper(pix, LUT, vec3(0.0));
+    P_011 = intp_helper(pix, LUT, vec3(1.0, 1.0, 0.0));
+    P_010 = intp_helper(pix, LUT, vec3(1.0, 0.0, 0.0));
+    P_111 = intp_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
+
+    return_pix = P_000 + (P_111-P_011)*deltaB + (P_010-P_000)*deltaR \
+      + (P_011-P_010)*deltaG;
+  } else {
+    // P6
+    P_000 = intp_helper(pix, LUT, vec3(0.0));
+    P_011 = intp_helper(pix, LUT, vec3(1.0, 1.0, 0.0));
+    P_001 = intp_helper(pix, LUT, vec3(0.0, 1.0, 0.0));
+    P_111 = intp_helper(pix, LUT, vec3(1.0, 1.0, 1.0));
+
+    return_pix = P_000 + (P_111-P_011)*deltaB + (P_011-P_001)*deltaR \
+      + (P_001-P_000)*deltaG;
+  }
+
+  return return_pix;
+}
+
 void main(void) {
 
   vec2 cellSize = 1.0 / resolution.xy;
@@ -142,6 +216,8 @@ void main(void) {
       textureValue = trilinear_interpolation(pix, u_srcLUT);
     } else if (u_interpolation == 2) {
       textureValue = prism_interpolation(pix, u_srcLUT);
+    } else if (u_interpolation == 3) {
+      textureValue = tetra_interpolation(pix, u_srcLUT);
     }
   } else {
     if (u_interpolation == 0) {
@@ -150,6 +226,8 @@ void main(void) {
       textureValue = trilinear_interpolation(pix, u_dstLUT);
     } else if (u_interpolation == 2) {
       textureValue = prism_interpolation(pix, u_dstLUT);
+    } else if (u_interpolation == 3) {
+      textureValue = tetra_interpolation(pix, u_dstLUT);
     }
   }
 

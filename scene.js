@@ -191,7 +191,7 @@ function init() {
     gui
       .add(imageProcessingMaterial.uniforms.u_interpolation,
            "value",
-           {Nearest: 0, Trilinear: 1, Prism: 2})
+           {Nearest: 0, Trilinear: 1, Prism: 2, Tetra: 3})
       .name("Interp. Method");
     gui.add(pausePlayObj, "pausePlay").name("Pause/play video");
     gui.add(pausePlayObj, "add10sec").name("Add 10 seconds");
