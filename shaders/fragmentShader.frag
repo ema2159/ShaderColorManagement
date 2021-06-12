@@ -139,7 +139,6 @@ vec3 tetra_interpolation(vec3 pix, sampler2D LUT) {
 
   vec3 return_pix;
 
-  // Common points bewteen two cases
   vec3 P_000, P_110, P_001, P_111, P_100, P_101, P_010, P_011;
 
   if (deltaB > deltaR && deltaR > deltaG) {
