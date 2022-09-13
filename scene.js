@@ -1,6 +1,6 @@
 import * as THREE from "https://unpkg.com/three@0.126.1/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js";
-import {GUI} from "https://unpkg.com/three/examples/jsm/libs/dat.gui.module.js";
+import {GUI} from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.module.js";
 import {vertexShader, fragmentShader} from "./shaders.js";
 
 function IVimageProcessing(height, width, imageProcessingMaterial) {
