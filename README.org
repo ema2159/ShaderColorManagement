@@ -1,0 +1,17 @@
+#+TITLE: Shader-based image processing
+#+CREATOR: Emmanuel Bustos T.
+#+OPTIONS: toc:nil
+
+This project consists of implementing Lookup table-based (LUT) color management, with four different types of interpolation. The implementation is built using GLSL, rendering the result in a Three.js scene.
+
+The interpolation methods implemented are:
+- Nearest neighbors interpolation
+- Trilinear interpolation
+- Prism interpolation
+- Tetrahedral interpolation
+
+#+CAPTION: Sample scene
+[[./screenshots/scene.png]]
+
+
+The scene can be checked [[https://ema2159.github.io/ShaderColorManagement/][here]].
